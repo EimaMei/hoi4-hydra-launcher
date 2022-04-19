@@ -24,6 +24,7 @@ To compile the whole thing, run `make windowsCompile`. If you need to build the 
 - Fix possible bugs/crashes.
 - Implement useful features that the current hoi4 launcher has.
 # Impossible/useless ideas that won't be worked on
-- Do the news tab (unlikely).
+- Make the launcher properly usable for older versions of hoi4 (<1.7.1 versions) (possible, not really useful to anyone).
+- Port to Linux/MacOS/other platforms (Linux possibly but MacOS unlikely, use a compatibility layer like Wine to run the launcher for now).
+- Do the news tab (unlikely/impossible).
 - Integrate the account system (impossible).
-- Make the launcher properly usable for older versions of hoi4 (<1.7.1 versions) (probably possible, not really useful to anyone).

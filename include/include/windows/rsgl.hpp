@@ -66,12 +66,15 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
         image(const char * Filename, rect R, std::vector<RSGL::color> pixels={});
         int draw();
     }; /*pixels structure.*/
-    struct text{
-      RSGL::circle rect;
-      RSGL::color c; 
-      std::string text; 
-      const char* f;
-    }; /*Text structure.*/
+    struct Text{
+        RSGL::circle rect; // the rectangular area/x/y of the text
+        RSGL::color c; // the color of the text
+        std::string text; // the text the text displays
+        const char* f; // the text's font
+        Text(std::string txt /*the text*/, RSGL::circle r /*the source x/y/size of the text*/, const char* font /*the font of the text*/, RSGL::color col /*the color of the text*/, bool draw=true /**should it draw or not*/); // init the text struct
+        void draw(); // draws text using the text struct
+        Text(){}
+    };
     struct resolution {int x,y,hz;};
     struct device_info {
         std::string os, model, name, serial_number; 
@@ -102,8 +105,8 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
         bool hovered();
         /* Checks if the button is being held/pressed.*/
         bool held(); bool pressed();
-        /* Checks if the mouse was released from the button.*/
-        bool released();
+        /* Checks if the mouse was released from the button. `full_checks` checks if you released anywhere, unreccomended to use.*/
+        bool released(bool full_checks=false);
 
         int mouse=0; /* Checks which mouse button clicked the button.*/
         shape ID;
@@ -208,7 +211,7 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
     /* Draw pixels.*/
     int drawPixels(rect r, std::vector<color> pixels); int drawPixels(rect r, std::vector<unsigned int> pixels);
     /* Draws the text.*/
-    int drawText(std::string text, RSGL::rect r, const char* font, RSGL::color col);
+    void drawText(std::string text, circle r, const char* font,color c);
     /*Draws a line (rectangle). Parameter `solid` is always set to true.*/
     #define drawLine drawRect
 

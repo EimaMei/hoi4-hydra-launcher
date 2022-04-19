@@ -146,8 +146,8 @@ bool RSGL::button::hovered() {
     return false;
 }
 
-bool RSGL::button::released() {
-    if (RSGL::win.type == RSGL::MouseButtonReleased && (RSGL::RectCollidePoint(rr, {win.mouse.x, win.mouse.y}) || m==false) ) { mouse=0; return true;}
+bool RSGL::button::released(bool full_checks/*=false*/) {
+    if (RSGL::win.type == RSGL::MouseButtonReleased && (RSGL::RectCollidePoint(rr, {win.mouse.x, win.mouse.y}) || (m==false && full_checks) ) ) { mouse=0; return true;}
     mouse=0;
     return false;
 }

@@ -490,10 +490,6 @@ int RSGL::window::ProcMSG() {
             RSGL::window::event.button=1;
             return RSGL::MouseButtonPressed; 
             
-            case WM_NCLBUTTONDOWN:
-            RSGL::window::event.button=1;
-            return RSGL::MouseButtonPressed;
-            
             case WM_LBUTTONUP:
             return RSGL::MouseButtonReleased;
 
@@ -510,7 +506,28 @@ int RSGL::window::ProcMSG() {
 
             case WM_MBUTTONUP:
             return RSGL::MouseButtonReleased;
+
+            case WM_NCLBUTTONDOWN:
+            RSGL::window::event.button=1;
+            return RSGL::MouseButtonPressed;
             
+            case WM_NCLBUTTONUP:
+            return RSGL::MouseButtonReleased;
+
+            case WM_NCRBUTTONDOWN:
+            RSGL::window::event.button=2;
+            return RSGL::MouseButtonPressed;
+
+            case WM_NCRBUTTONUP:
+            return RSGL::MouseButtonReleased;
+
+            case WM_NCMBUTTONDOWN:
+            RSGL::window::event.button=3;
+            return RSGL::MouseButtonPressed;
+
+            case WM_NCMBUTTONUP:
+            return RSGL::MouseButtonReleased;
+
             case WM_MOUSEWHEEL:
             return RSGL::win.check;
         }

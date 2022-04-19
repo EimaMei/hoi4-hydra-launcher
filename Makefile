@@ -5,7 +5,7 @@ SOURCE = $(SOURCEDIR)/rsgl.cpp
 LIBDIR = $(SOURCEDIR)/deps
 LIBS = $(LIBDIR)/libX11.so.6.4.0 $(LIBDIR)/libpng16.so.16.37.0  $(LIBDIR)/libpthread-2.33.so
 
-WARGS = -O2 -Wno-unknown-pragmas -mwindows
+WARGS = -O2 -Wno-unknown-pragmas #-mwindows
 WSOURCEDIR = source/windows
 WSOURCE = $(WSOURCEDIR)/rsgl.cpp $(WSOURCEDIR)/rsal.cpp $(WSOURCEDIR)/collide.cpp $(WSOURCEDIR)/device.cpp $(WSOURCEDIR)/draw.cpp $(WSOURCEDIR)/xinput.cpp $(WSOURCEDIR)/other.cpp $(WSOURCEDIR)/extension.cpp
 WLIBS = -L"$(CURDIR)/source/windows/deps" -lcomdlg32 -lgdi32 -ldiscord -lopengl32 -lxinput -lwinmm -lpsapi
