@@ -1,8 +1,7 @@
-#ifndef RSGL
-#include "../../include/include/windows/rsgl.hpp"
+#ifndef SWGL
+#include "../../SWGL.hpp"
 #endif
 #include "deps/win32_SetProcessDpiAware.c"
-#include "../../include/include/windows/keys.hpp"
 
 std::string wintest() { 
     return "windows gay";
@@ -10,7 +9,7 @@ std::string wintest() {
 
 HGLRC glrc;
 
-RSGL::window::window(const char* name, RSGL::rect r, RSGL::color c, uint32_t flag/*=0*/) {
+SWGL::window::window(const char* name, SWGL::rect r, SWGL::color c, uint32_t flag/*=0*/) {
     if (flag & 32) {  }
     else { win32_SetProcessDpiAware(); } //We check if DPI is enabled
 
@@ -19,7 +18,7 @@ RSGL::window::window(const char* name, RSGL::rect r, RSGL::color c, uint32_t fla
     WNDCLASSEXA Class;
 	ZeroMemory(&Class, sizeof(WNDCLASSEXW));
     Class.cbSize = sizeof(WNDCLASSEXW);
-    Class.lpszClassName = TEXT("RSGL Windows (Official)");
+    Class.lpszClassName = TEXT("SWGL Windows (Official)");
     Class.hInstance = inh;
     Class.hIcon = LoadIcon(NULL, IDI_WINLOGO);
     Class.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -44,7 +43,7 @@ RSGL::window::window(const char* name, RSGL::rect r, RSGL::color c, uint32_t fla
 
     AdjustWindowRect(&Rect, list, false);
     HWND window = CreateWindowEx(0, 
-        TEXT("RSGL Windows (Official)"), 
+        TEXT("SWGL Windows (Official)"), 
         name, 
         list, 
         r.x, r.y, r.width, r.length, 
@@ -53,7 +52,7 @@ RSGL::window::window(const char* name, RSGL::rect r, RSGL::color c, uint32_t fla
         inh, 
         NULL
     );                
-    RSGL::window::hwnd = window;
+    SWGL::window::hwnd = window;
     
     
     PIXELFORMATDESCRIPTOR pfd;
@@ -75,19 +74,19 @@ RSGL::window::window(const char* name, RSGL::rect r, RSGL::color c, uint32_t fla
     glEnable(GL_BLEND); //Enable blending.
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
 
-    RSGL::window::enabled_flags=flag;
-    RSGL::window::r = r;
-    RSGL::window::hwnd = window;
-    RSGL::window::c = c;
-    RSGL::win.owr = r;
+    SWGL::window::enabled_flags=flag;
+    SWGL::window::r = r;
+    SWGL::window::hwnd = window;
+    SWGL::window::c = c;
+    SWGL::win.owr = r;
 
     int show = SW_SHOW;
     if (flag & 8) { show=SW_SHOWMAXIMIZED; } // MAXAMIZED_WINDOW flag
     else if (flag & 16) { show=SW_SHOWMINIMIZED; } // MINIMIZED_WINDOW flag
 
     if (flag & 1)  {  }; // DEBUG, not implemented trolololol
-    if (flag & 4)  { RSGL::window::fullscreen(true);}; // Fullscreen
-    if (flag & WINDOW_CENTRALIZED) { RSGL::window::centralize();} //Centralized
+    if (flag & 4)  { SWGL::window::fullscreen(true);}; // Fullscreen
+    if (flag & WINDOW_CENTRALIZED) { SWGL::window::centralize();} //Centralized
 
     ShowWindow(window, show);
     UpdateWindow(window);
@@ -95,31 +94,31 @@ RSGL::window::window(const char* name, RSGL::rect r, RSGL::color c, uint32_t fla
 }
 
 bool check_hardware_info;
-int RSGL::window::checkEvents(){
-    RSGL::window::event.button=-9;
-    RSGL::window::event.key=0;
-    RSGL::win.old_menu=0;
-    RSGL::window::event.type = RSGL::window::ProcMSG();
+int SWGL::window::checkEvents(){
+    event.key=0;
+    win.old_menu=0;
+    SWGL::window::event.button=0;
+    event.type = SWGL::window::ProcMSG();
 
     POINT cursorPos;
     GetCursorPos(&cursorPos);
     ScreenToClient(hwnd, &cursorPos);
-    RSGL::window::event.x = cursorPos.x;
-    RSGL::window::event.y = cursorPos.y;
+    SWGL::window::event.x = cursorPos.x;
+    SWGL::window::event.y = cursorPos.y;
 
-    RSGL::win = {RSGL::window::r, RSGL::window::c, RSGL::window::enabled_flags, RSGL::window::hwnd, RSGL::window::event.type, {RSGL::window::event.x, RSGL::window::event.y}, event.button, win.old_menu, RSGL::win.old_key, RSGL::win.check, RSGL::win.owr};
+    SWGL::win = {SWGL::window::r, SWGL::window::c, SWGL::window::enabled_flags, SWGL::window::hwnd, SWGL::window::event.type, {SWGL::window::event.x, SWGL::window::event.y}, event.button, win.old_menu, SWGL::win.old_key, SWGL::win.check, SWGL::win.owr};
 
-    if (RSGL::win.enabled_flags & 2) { // We check if xinput is enabled
+    if (SWGL::win.enabled_flags & 2) { // We check if xinput is enabled
         XINPUT_STATE state;
         ZeroMemory(&state, sizeof(XINPUT_STATE));
         XInputGetState(0, &state);
 
-        RSGL::window::event.pad = {state.Gamepad.sThumbLX, state.Gamepad.sThumbLY}; // L-stick
-        RSGL::window::event.r_pad = {state.Gamepad.sThumbRX, state.Gamepad.sThumbRY}; // R-stick
-        RSGL::window::event.triggers[0] = state.Gamepad.bLeftTrigger;
-        RSGL::window::event.triggers[1] = state.Gamepad.bRightTrigger;
+        SWGL::window::event.pad = {state.Gamepad.sThumbLX, state.Gamepad.sThumbLY}; // L-stick
+        SWGL::window::event.r_pad = {state.Gamepad.sThumbRX, state.Gamepad.sThumbRY}; // R-stick
+        SWGL::window::event.triggers[0] = state.Gamepad.bLeftTrigger;
+        SWGL::window::event.triggers[1] = state.Gamepad.bRightTrigger;
     }
-    if (RSGL::win.enabled_flags & 1) {createDebugTable();}
+    if (SWGL::win.enabled_flags & 1) {createDebugTable();}
 
 
     glClearColor((float)c.r/255, (float)c.g/255, (float)c.b/255, float(c.a)/255); 
@@ -129,93 +128,93 @@ int RSGL::window::checkEvents(){
     return 0;
 }
 
-int RSGL::window::clear() {
+int SWGL::window::clear() {
     glFlush();
 
     PAINTSTRUCT ps;
-    EndPaint(RSGL::window::hwnd, &ps);
+    EndPaint(SWGL::window::hwnd, &ps);
     return 0;
 }
 
-int RSGL::window::close() {
+int SWGL::window::close() {
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(glrc);
     
     RSAL::quit();
-    DestroyWindow(RSGL::window::hwnd);
+    DestroyWindow(SWGL::window::hwnd);
     PostQuitMessage(0);
     return 0;
 }
 
-void RSGL::window::resize(bool value){
-    if (value) SetWindowLong(RSGL::window::hwnd, GWL_STYLE, GetWindowLong(RSGL::window::hwnd, GWL_STYLE)|WS_SIZEBOX);
-    else SetWindowLong(RSGL::window::hwnd, GWL_STYLE, GetWindowLong(RSGL::window::hwnd, GWL_STYLE)&~WS_SIZEBOX);
+void SWGL::window::resize(bool value){
+    if (value) SetWindowLong(SWGL::window::hwnd, GWL_STYLE, GetWindowLong(SWGL::window::hwnd, GWL_STYLE)|WS_SIZEBOX);
+    else SetWindowLong(SWGL::window::hwnd, GWL_STYLE, GetWindowLong(SWGL::window::hwnd, GWL_STYLE)&~WS_SIZEBOX);
 }
 
-void RSGL::window::fullscreen(bool value) {
-    DWORD style = GetWindowLong(RSGL::window::hwnd, GWL_STYLE);
+void SWGL::window::fullscreen(bool value) {
+    DWORD style = GetWindowLong(SWGL::window::hwnd, GWL_STYLE);
     MONITORINFO mi = { sizeof(mi) };
 	if (value) {
 		RECT rect;
-		GetWindowRect(RSGL::window::hwnd, &rect);
-        RSGL::window::r = {rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top};
-        RSGL::win.r = RSGL::window::r;
+		GetWindowRect(SWGL::window::hwnd, &rect);
+        SWGL::window::r = {rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top};
+        SWGL::win.r = SWGL::window::r;
 
-		GetMonitorInfo(MonitorFromWindow(RSGL::window::hwnd, MONITOR_DEFAULTTOPRIMARY), &mi);
-		SetWindowLong(RSGL::window::hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
-		SetWindowPos(RSGL::window::hwnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top,
+		GetMonitorInfo(MonitorFromWindow(SWGL::window::hwnd, MONITOR_DEFAULTTOPRIMARY), &mi);
+		SetWindowLong(SWGL::window::hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
+		SetWindowPos(SWGL::window::hwnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top,
 			mi.rcMonitor.right - mi.rcMonitor.left,
 			mi.rcMonitor.bottom - mi.rcMonitor.top,
 			SWP_NOOWNERZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 	}
 	else {
-		GetMonitorInfo(MonitorFromWindow(RSGL::window::hwnd, MONITOR_DEFAULTTOPRIMARY), &mi);
-		SetWindowLong(RSGL::window::hwnd, GWL_STYLE, style | WS_OVERLAPPEDWINDOW);
-		SetWindowPos(RSGL::window::hwnd, HWND_NOTOPMOST, RSGL::window::r.x, RSGL::window::r.y, RSGL::window::r.width, RSGL::window::r.length, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+		GetMonitorInfo(MonitorFromWindow(SWGL::window::hwnd, MONITOR_DEFAULTTOPRIMARY), &mi);
+		SetWindowLong(SWGL::window::hwnd, GWL_STYLE, style | WS_OVERLAPPEDWINDOW);
+		SetWindowPos(SWGL::window::hwnd, HWND_NOTOPMOST, SWGL::window::r.x, SWGL::window::r.y, SWGL::window::r.width, SWGL::window::r.length, SWP_NOZORDER | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 	}
 }
-void RSGL::window::position(RSGL::rect window){ MoveWindow(RSGL::window::hwnd, window.x, window.y, window.width, window.length ,true); }
-void RSGL::window::maximize(bool value) {
+void SWGL::window::position(SWGL::rect window){ MoveWindow(SWGL::window::hwnd, window.x, window.y, window.width, window.length ,true); }
+void SWGL::window::maximize(bool value) {
     int g;
     if (value) g = SW_SHOWMAXIMIZED;
     else g=SW_SHOWNORMAL;
-    ShowWindow(RSGL::window::hwnd, g);
+    ShowWindow(SWGL::window::hwnd, g);
 }
 
-void RSGL::window::centralize() {
+void SWGL::window::centralize() {
 	MONITORINFO mi = { sizeof(mi) };
 
-	GetMonitorInfo(MonitorFromWindow(RSGL::window::hwnd, MONITOR_DEFAULTTONEAREST), &mi);
-	int x = (mi.rcMonitor.right - mi.rcMonitor.left - RSGL::window::r.width) / 2;
-	int y = (mi.rcMonitor.bottom - mi.rcMonitor.top - RSGL::window::r.length) / 2;
+	GetMonitorInfo(MonitorFromWindow(SWGL::window::hwnd, MONITOR_DEFAULTTONEAREST), &mi);
+	int x = (mi.rcMonitor.right - mi.rcMonitor.left - SWGL::window::r.width) / 2;
+	int y = (mi.rcMonitor.bottom - mi.rcMonitor.top - SWGL::window::r.length) / 2;
 
-	SetWindowPos(RSGL::window::hwnd, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+	SetWindowPos(SWGL::window::hwnd, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
-int RSGL::window::changeIcon(const char* filename) {
+int SWGL::window::changeIcon(const char* filename) {
     if (std::string(filename).find(".exe") != std::string::npos) {
         HICON hIcon;
         ExtractIconEx(filename,0,&hIcon,NULL,3);
-        SendMessage(RSGL::window::hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+        SendMessage(SWGL::window::hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 
         return 0;
     }
     else {
         HANDLE hIcon = LoadImage(NULL, filename, IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
         if (hIcon) {
-            SendMessage(RSGL::window::hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+            SendMessage(SWGL::window::hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
             return 0;
         }
     }
     return -1;
 }
 
-int RSGL::window::changeName(const char* name) { SetWindowText(RSGL::window::hwnd, name); return 0; }
+int SWGL::window::changeName(const char* name) { SetWindowText(SWGL::window::hwnd, name); return 0; }
 
 
 
-bool RSGL::window::isPressed(int key, int port/*=0*/) {
-    if (RSGL::win.enabled_flags & 2) {
+bool SWGL::window::isPressed(int key, int port/*=0*/) {
+    if (SWGL::win.enabled_flags & 2) {
         key-=100;
         if ((key == XINPUT_GAMEPAD_A || key == XINPUT_GAMEPAD_B || key == XINPUT_GAMEPAD_X || key == XINPUT_GAMEPAD_Y) || 
             (key == XINPUT_GAMEPAD_LEFT_THUMB || key == XINPUT_GAMEPAD_RIGHT_THUMB) || 
@@ -255,30 +254,30 @@ bool RSGL::window::isPressed(int key, int port/*=0*/) {
         }
         key+=100;
     }
-    return GetKeyState(key) & 0x1000;
+    return ( win.type == SWGL::KeyPressed && GetKeyState(key) & 0x1000);
 }
 
-bool RSGL::window::isReleased(int key, int port/*=0*/) {
-    if (RSGL::win.enabled_flags & 2) {
+bool SWGL::window::isReleased(int key, int port/*=0*/) {
+    if (SWGL::win.enabled_flags & 2) {
         /*Xinput needs to be implemented for isReleased.*/
     }
     int g = GetKeyState(key) & 0x1000; // We check if `key` is being pressed`
-    if (g == 4096) { RSGL::win.old_key=key; return false; }  // If it is being pressed, set `RSGL::win.old_key` as `key` and return false
-    else if (key==RSGL::win.old_key && g != 4096) {RSGL::win.old_key=695; return true;} // If `RSGL::win.old_key` is `key` but `key` isn't being pressed, then it means `key` was released recently. Set `RSGL::win.old_key` to anything to make sure it doesn't spam true
+    if (g == 4096) { SWGL::win.old_key=key; return false; }  // If it is being pressed, set `SWGL::win.old_key` as `key` and return false
+    else if (key==SWGL::win.old_key && g != 4096) {SWGL::win.old_key=695; return true;} // If `SWGL::win.old_key` is `key` but `key` isn't being pressed, then it means `key` was released recently. Set `SWGL::win.old_key` to anything to make sure it doesn't spam true
     return false;
 }
 
-bool RSGL::window::isClicked(int key, int port/*=0*/) {
-    if (RSGL::win.enabled_flags & 2) {
+bool SWGL::window::isClicked(int key, int port/*=0*/) {
+    if (SWGL::win.enabled_flags & 2) {
         /*Xinput needs to be implemented for isClicked.*/
     }
     int g = GetKeyState(key) & 0x1000; 
-    if (g == 4096 && key!=RSGL::win.old_key) { RSGL::win.old_key=key; return true; } 
-    else if (g != 4096 && key==RSGL::win.old_key) {RSGL::win.old_key=635;}
+    if (g == 4096 && key!=SWGL::win.old_key) { SWGL::win.old_key=key; return true; } 
+    else if (g != 4096 && key==SWGL::win.old_key) {SWGL::win.old_key=635;}
     return false;
 }
 
-int RSGL::messageBox(std::string title, std::string message, int option/*=-1*/, UINT flags/*=0*/) {
+int SWGL::messageBox(std::string title, std::string message, int option/*=-1*/, UINT flags/*=0*/) {
     /* 
     -1 - Nothing
     0  - Error
@@ -291,10 +290,10 @@ int RSGL::messageBox(std::string title, std::string message, int option/*=-1*/, 
     else if (option == 2) opt = MB_ICONQUESTION | flags;
     else if (option == -1) opt = flags;
 
-    return MessageBox(RSGL::win.hwnd, message.c_str(), title.c_str(), opt);
+    return MessageBox(SWGL::win.hwnd, message.c_str(), title.c_str(), opt);
 }
 
-std::string RSGL::fileDialog(const char* title, bool multiple/*=false*/, bool save/*=false*/, bool directory/*=false*/) {
+std::string SWGL::fileDialog(const char* title, bool multiple/*=false*/, bool save/*=false*/, bool directory/*=false*/) {
     if (!directory) { 
         OPENFILENAME ofn;
         char szFile[260];
@@ -338,7 +337,7 @@ std::string RSGL::fileDialog(const char* title, bool multiple/*=false*/, bool sa
     return "";
 }
 
-std::string RSGL::getUsername() {
+std::string SWGL::getUsername() {
     char username[257];
     DWORD username_len = 257;
     GetUserName(username, &username_len);
@@ -346,10 +345,10 @@ std::string RSGL::getUsername() {
     return (std::string)username;
 }
 
-int RSGL::getLanguage() {
+int SWGL::getLanguage() {
     return PRIMARYLANGID(GetUserDefaultLCID());
 }
-std::string RSGL::getClipboardText() {
+std::string SWGL::getClipboardText() {
     OpenClipboard(nullptr);
     HANDLE hData = GetClipboardData(CF_TEXT);
     char* text = static_cast<char*>(GlobalLock(hData));
@@ -360,11 +359,11 @@ std::string RSGL::getClipboardText() {
     return txt;
 }
 
-int RSGL::setClipboardText(std::string txt) {
+int SWGL::setClipboardText(std::string txt) {
     HANDLE global = GlobalAlloc(GMEM_FIXED, 32);
     memcpy(global, txt.c_str(), txt.size());
 
-    OpenClipboard(RSGL::win.hwnd);
+    OpenClipboard(SWGL::win.hwnd);
     EmptyClipboard();
     SetClipboardData(CF_TEXT, global);
     CloseClipboard();
@@ -377,7 +376,7 @@ int fps_current;
 int fps_frames = 0; 
 auto start = std::chrono::system_clock::now();
 
-int RSGL::getFPS() {
+int SWGL::getFPS() {
     std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now()-start;
     fps_frames++;
     if (fps_lasttime < elapsed_seconds.count() - 1.0){
@@ -388,30 +387,30 @@ int RSGL::getFPS() {
     return fps_current;
 }
 
-RSGL::debug RSGL::window::createDebugTable() {
+SWGL::debug SWGL::window::createDebugTable() {
     if (!check_hardware_info) {
-        device_info info = RSGL::getGPUDeviceInfo();
-        RSGL::window::debug.gpu = info.gpu;
-        RSGL::window::debug.vram_available = info.vram;
-        RSGL::window::debug.driver = info.driver_version;
-        info = RSGL::getCPUDeviceInfo(true, false, false, false);
-        RSGL::window::debug.cpu = info.cpu;
-        info = RSGL::getOSDeviceInfo(true, false, false, false, false);
-        RSGL::window::debug.os = info.os;
+        device_info info = SWGL::getGPUDeviceInfo();
+        SWGL::window::debug.gpu = info.gpu;
+        SWGL::window::debug.vram_available = info.vram;
+        SWGL::window::debug.driver = info.driver_version;
+        info = SWGL::getCPUDeviceInfo(true, false, false, false);
+        SWGL::window::debug.cpu = info.cpu;
+        info = SWGL::getOSDeviceInfo(true, false, false, false, false);
+        SWGL::window::debug.os = info.os;
         check_hardware_info=true;
     }
     PROCESS_MEMORY_COUNTERS_EX pmc;
     GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
-    RSGL::window::debug.fps = RSGL::getFPS();
-    RSGL::window::debug.vram_used =  pmc.PeakWorkingSetSize/1048576/2*100;
+    SWGL::window::debug.fps = SWGL::getFPS();
+    SWGL::window::debug.vram_used =  pmc.PeakWorkingSetSize/1048576/2*100;
 
-    return RSGL::window::debug;
+    return SWGL::window::debug;
 }
 int g_scrollY=0;
 LRESULT CALLBACK WindowProc(HWND h, UINT msg, WPARAM param, LPARAM lparam) {
     switch (msg) {
         case WM_COMMAND:{
-            RSGL::win.old_menu = LOWORD(param);
+            SWGL::win.old_menu = LOWORD(param);
             break;
         }
         case WM_VSCROLL: {
@@ -434,23 +433,23 @@ LRESULT CALLBACK WindowProc(HWND h, UINT msg, WPARAM param, LPARAM lparam) {
             si.nTrackPos = 0;
             SetScrollInfo(h, SB_VERT, &si, true);
 
-            RSGL::win.owr.x = -pos;
+            SWGL::win.owr.x = -pos;
 
             return 0;
         }
         case WM_SIZE: {
             RECT rc = { 0 };
             GetClientRect(h, &rc);
-		    if (!(RSGL::win.enabled_flags & 256))  glViewport(RSGL::win.r.x, RSGL::win.r.y, LOWORD(lparam), HIWORD(lparam));
+		    if (!(SWGL::win.enabled_flags & 256))  glViewport(SWGL::win.r.x, SWGL::win.r.y, LOWORD(lparam), HIWORD(lparam));
 
-            RSGL::win.r = {RSGL::win.r.x, RSGL::win.r.y, (int)LOWORD(lparam), (int)HIWORD(lparam)};
+            SWGL::win.r = {SWGL::win.r.x, SWGL::win.r.y, (int)LOWORD(lparam), (int)HIWORD(lparam)};
             SCROLLINFO si = { 0 };
             si.cbSize = sizeof(SCROLLINFO);
             si.fMask = SIF_ALL;
-            si.nMin = RSGL::win.owr.width;
-            si.nMax = RSGL::win.owr.length-40;
+            si.nMin = SWGL::win.owr.width;
+            si.nMax = SWGL::win.owr.length-40;
             si.nPage = (rc.bottom - rc.top);
-            si.nPos = RSGL::win.owr.x;
+            si.nPos = SWGL::win.owr.x;
             si.nTrackPos = 0;
             SetScrollInfo(h, SB_VERT, &si, true);
             break;
@@ -469,67 +468,72 @@ LRESULT CALLBACK WindowProc(HWND h, UINT msg, WPARAM param, LPARAM lparam) {
     return DefWindowProc(h, msg, param, lparam);
 }
 
-int RSGL::window::ProcMSG() {
+int SWGL::window::ProcMSG() {
     MSG msg = {};
     while (PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE)) {
         switch (msg.message) {
             case WM_QUIT:
-            return RSGL::quit;
+            return SWGL::quit;
 
             case WM_KEYDOWN:
-            RSGL::window::event.key = msg.wParam;
-            return RSGL::KeyPressed;
+            SWGL::window::event.key = msg.wParam;
+            return SWGL::KeyPressed;
 
             case WM_KEYUP:
-            return RSGL::KeyReleased;
+            return SWGL::KeyReleased;
 
             case WM_MOUSEMOVE:
-            return RSGL::MousePosChanged;
+            return SWGL::MousePosChanged;
 
             case WM_LBUTTONDOWN:
-            RSGL::window::event.button=1;
-            return RSGL::MouseButtonPressed; 
+            SWGL::window::event.button=1;
+            return SWGL::MouseButtonPressed; 
             
             case WM_LBUTTONUP:
-            return RSGL::MouseButtonReleased;
+            return SWGL::MouseButtonReleased;
 
             case WM_RBUTTONDOWN:
-            RSGL::window::event.button=2;
-            return RSGL::MouseButtonPressed;
+            SWGL::window::event.button=2;
+            return SWGL::MouseButtonPressed;
 
             case WM_RBUTTONUP:
-            return RSGL::MouseButtonReleased;
+            return SWGL::MouseButtonReleased;
 
             case WM_MBUTTONDOWN:
-            RSGL::window::event.button=3;
-            return RSGL::MouseButtonPressed;
+            SWGL::window::event.button=3;
+            return SWGL::MouseButtonPressed;
 
             case WM_MBUTTONUP:
-            return RSGL::MouseButtonReleased;
+            return SWGL::MouseButtonReleased;
+
+            case WM_NCMOUSEMOVE:
+            return SWGL::MousePosChanged;
 
             case WM_NCLBUTTONDOWN:
-            RSGL::window::event.button=1;
-            return RSGL::MouseButtonPressed;
+            SWGL::window::event.button=1;
+            return SWGL::MouseButtonPressed;
             
             case WM_NCLBUTTONUP:
-            return RSGL::MouseButtonReleased;
+            return SWGL::MouseButtonReleased;
 
             case WM_NCRBUTTONDOWN:
-            RSGL::window::event.button=2;
-            return RSGL::MouseButtonPressed;
+            SWGL::window::event.button=2;
+            return SWGL::MouseButtonPressed;
 
             case WM_NCRBUTTONUP:
-            return RSGL::MouseButtonReleased;
+            return SWGL::MouseButtonReleased;
 
             case WM_NCMBUTTONDOWN:
-            RSGL::window::event.button=3;
-            return RSGL::MouseButtonPressed;
+            SWGL::window::event.button=3;
+            return SWGL::MouseButtonPressed;
 
             case WM_NCMBUTTONUP:
-            return RSGL::MouseButtonReleased;
+            return SWGL::MouseButtonReleased;
 
-            case WM_MOUSEWHEEL:
-            return RSGL::win.check;
+            case WM_MOUSEWHEEL: 
+            SWGL::window::event.button=16-win.check;
+            if (SWGL::win.check == 11 || SWGL::win.check == 12) return SWGL::MouseWheelScrolling;
+                
         }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -543,11 +547,11 @@ LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (wParam == WM_MOUSEWHEEL) {
         MSLLHOOKSTRUCT *pMhs = (MSLLHOOKSTRUCT *)lParam;
         short zdelta = HIWORD(pMhs->mouseData);
-        if (zdelta > 0) RSGL::win.check= 11;
-        else RSGL::win.check = 12;
+        if (zdelta > 0) SWGL::win.check= 12;
+        else SWGL::win.check = 11;
     }
   }
   return CallNextHookEx(0, nCode, wParam, lParam);
 }
 
-namespace RSGL{RSGL::drawable win=win;};
+namespace SWGL{SWGL::drawable win=win;};

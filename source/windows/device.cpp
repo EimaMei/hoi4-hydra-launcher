@@ -1,5 +1,5 @@
-#ifndef RSGL
-#include "../../include/include/windows/rsgl.hpp"
+#ifndef SWGL
+#include "../../SWGL.hpp"
 #endif
 
 void windowsCMDInfoFetch(const char* cmd, std::string& obj) {
@@ -10,7 +10,7 @@ void windowsCMDInfoFetch(const char* cmd, std::string& obj) {
     fclose(f);
 }
 
-RSGL::device_info RSGL::getFullDeviceInfo() {
+SWGL::device_info SWGL::getFullDeviceInfo() {
     // RAM stuff
     MEMORYSTATUSEX memory;
     memory.dwLength = sizeof(memory);
@@ -95,7 +95,7 @@ RSGL::device_info RSGL::getFullDeviceInfo() {
     };
 }
 
-RSGL::device_info RSGL::getRAMDeviceInfo(bool total/*=true*/, bool available/*=true*/, bool used/*=true*/, bool percentage/*=true*/) {
+SWGL::device_info SWGL::getRAMDeviceInfo(bool total/*=true*/, bool available/*=true*/, bool used/*=true*/, bool percentage/*=true*/) {
     // RAM stuff
     MEMORYSTATUSEX memory;
     memory.dwLength = sizeof(memory);
@@ -120,7 +120,7 @@ RSGL::device_info RSGL::getRAMDeviceInfo(bool total/*=true*/, bool available/*=t
     };
 }
 
-RSGL::device_info RSGL::getOSDeviceInfo(bool os/*=true*/, bool model/*=true*/, bool pc_name/*=true*/, bool bit/*=true*/, bool serial_number/*=true*/) {
+SWGL::device_info SWGL::getOSDeviceInfo(bool os/*=true*/, bool model/*=true*/, bool pc_name/*=true*/, bool bit/*=true*/, bool serial_number/*=true*/) {
     std::string s_os, s_model, s_pc_name, s_n64or32questionmark="0", s_serial_number;
 
     // Gets the OS
@@ -140,7 +140,7 @@ RSGL::device_info RSGL::getOSDeviceInfo(bool os/*=true*/, bool model/*=true*/, b
     };
 }
 
-RSGL::device_info RSGL::getHDDDeviceInfo(bool total/*=true*/, bool free/*=true*/, bool used/*=true*/) {
+SWGL::device_info SWGL::getHDDDeviceInfo(bool total/*=true*/, bool free/*=true*/, bool used/*=true*/) {
     std::string hdd_total, hdd_free;
     
     if (total) windowsCMDInfoFetch("wmic logicaldisk get Size | findstr [0-9] | tr -d '\\n'", hdd_total); 
@@ -161,7 +161,7 @@ RSGL::device_info RSGL::getHDDDeviceInfo(bool total/*=true*/, bool free/*=true*/
     };
 }
 
-RSGL::device_info RSGL::getGPUDeviceInfo(bool gpu/*=true*/, bool driver_version/*=true*/, bool vram/*=true*/) {
+SWGL::device_info SWGL::getGPUDeviceInfo(bool gpu/*=true*/, bool driver_version/*=true*/, bool vram/*=true*/) {
     const GLubyte* renderer;
     std::string s_driver, s_vram;
     int mb_vram=0;
@@ -183,7 +183,7 @@ RSGL::device_info RSGL::getGPUDeviceInfo(bool gpu/*=true*/, bool driver_version/
     };
 }
 
-RSGL::device_info RSGL::getCPUDeviceInfo(bool cpu/*=true*/, bool cores/*=true*/, bool percentage/*=true*/, bool architecture/*=true*/) {
+SWGL::device_info SWGL::getCPUDeviceInfo(bool cpu/*=true*/, bool cores/*=true*/, bool percentage/*=true*/, bool architecture/*=true*/) {
     std::string s_cpu="0", s_cpu_cores="0", s_cpu_percentage="0", s_cpu_architecture="0";
 
     // CPU

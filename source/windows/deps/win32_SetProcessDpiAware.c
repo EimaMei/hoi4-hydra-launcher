@@ -2,7 +2,7 @@
 // Created by kumar on 2016/03/29.
 //
 #include <windows.h>
-#include "../../../include/include/windows/deps/win32/win32_SetProcessDpiAware.h"
+#include "../../../include/SWGL/deps/win32/win32_SetProcessDpiAware.h"
 
 #ifndef DPI_ENUMS_DECLARED
 typedef enum PROCESS_DPI_AWARENESS

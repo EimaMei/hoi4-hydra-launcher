@@ -28,8 +28,8 @@ std::string wintest();
 LRESULT CALLBACK WindowProc(HWND h, UINT msg, WPARAM param, LPARAM lparam);
 LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
-namespace RSGL{ /* It all starts with this, the namespace containing the Ultimate Power.*/
-    using namespace RSAL; /* Include RSAL to RSGL.*/
+namespace SWGL{ /* It all starts with this, the namespace containing the Ultimate Power.*/
+    using namespace RSAL; /* Include RSAL to SWGL.*/
     const int KeyPressed=2; // a key has been pressed
     const int KeyReleased=3; // a key has been released
     const int MouseButtonPressed=4; // a mouse button has been pressed (left,middle,right)
@@ -51,8 +51,7 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
         private: GLuint tex; unsigned char * data; point original_size; bool loaded=false;
         public:
         /* Loads the image.*/
-        image(const char * Filename, rect R, bool load=true);
-        void load();
+        image(const char * Filename, rect R, bool load=true); void load();
         /* Draws the image.*/
         int draw();
         /* Gets the pixel color in RGB.*/
@@ -63,15 +62,15 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
         
         point r;
         GLuint tex=-1;
-        image(const char * Filename, rect R, std::vector<RSGL::color> pixels={});
+        image(const char * Filename, rect R, std::vector<SWGL::color> pixels={});
         int draw();
     }; /*pixels structure.*/
     struct Text{
-        RSGL::circle rect; // the rectangular area/x/y of the text
-        RSGL::color c; // the color of the text
+        SWGL::circle rect; // the rectangular area/x/y of the text
+        SWGL::color c; // the color of the text
         std::string text; // the text the text displays
         const char* f; // the text's font
-        Text(std::string txt /*the text*/, RSGL::circle r /*the source x/y/size of the text*/, const char* font /*the font of the text*/, RSGL::color col /*the color of the text*/, bool draw=true /**should it draw or not*/); // init the text struct
+        Text(std::string txt /*the text*/, SWGL::circle r /*the source x/y/size of the text*/, const char* font /*the font of the text*/, SWGL::color col /*the color of the text*/, bool draw=true /**should it draw or not*/); // init the text struct
         void draw(); // draws text using the text struct
         Text(){}
     };
@@ -97,7 +96,7 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
         int fps, vram_used, vram_available;
         std::string os, cpu, gpu, driver;
     }; /*The debug table structure.*/
-    enum shape{RECTANGLE, TRIANGLE, CIRCLE, IMAGE}; /* Defines what the button is (a rectangle, triangle etc.)*/
+    enum shape{RECTANGLE, TRIANGLE, CIRCLE, IMAGE, win32}; /* Defines what the button is (a rectangle, triangle etc.)*/
     struct button {
         /* Checks if the button has been mouse clicked.*/
         bool clicked();
@@ -110,15 +109,16 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
 
         int mouse=0; /* Checks which mouse button clicked the button.*/
         shape ID;
+        SWGL::rect r;
 
-        private: bool m=false; RSGL::rect rr; RSGL::circle cirr; color cc; RSGL::image i={"", {}};
+        private: bool m=false; SWGL::rect rr; SWGL::circle cirr; color cc; SWGL::image i={"", {}};
         public:
         /* Init the button.*/
         button(shape id, rect r, color c) { rr={r.x, r.y, r.width, r.length}; cc=c;ID=id; }; 
         button(shape id, circle cir, color c){cirr=cir; cc=c;ID=id;};
-        button(shape id, const char* filename, rect r) { rr=r; ID=id; i.filename=filename; i.r=r; i.load(); }; 
+        button(shape id, const char* filename, rect r) { rr=r; button::r=rr; ID=id; i.filename=filename; i.r=r; i.load(); }; 
         /* Draws the button.*/
-        void draw(RSGL::rect r={});
+        void draw(SWGL::rect r={});
         /* Load the image.*/
         void load(const char* filename, rect r, bool load_regardless=false);
     }; /* Button structure.*/
@@ -134,6 +134,20 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
         int count=1;
         HWND window;
     }; /* Menubar structure.*/
+    struct scrollbar {
+        SWGL::rect r; SWGL::shape ID;
+        SWGL::rect r_pointer; SWGL::shape ID_pointer;
+        int pos=0; int speed=1; int limit;
+        HWND s_window;
+
+        private: bool m=false; SWGL::color cc; SWGL::image i={"", {}}; SWGL::image i_pointer={"", {}}; SWGL::rect original_r; SWGL::point old_mouse;
+        public:
+    
+        void setPointer(SWGL::shape id, const char* filename, SWGL::rect r);
+        int checkEvents();
+        void draw();
+        void load(const char* filename, SWGL::rect r);
+    };
     struct drawable {rect r; color c; uint32_t enabled_flags; HWND hwnd; int type; point mouse; int button; int old_menu; int old_key; int check; rect owr;}; /* Window information*/
     
     struct window : drawable { /* The `window` structure. Stores the important information about the window and program.*/
@@ -155,18 +169,18 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
                 int key; /* The current pressed key.*/
             };
             Event event; // The Event variable.
-            RSGL::debug debug;
+            SWGL::debug debug;
 
             /* Inits and creates a window.*/
             window(const char* name, rect r, color c, uint32_t flag=0);
-            /* Updates everything what happened this exact frame. Required in every RSGL project.*/
+            /* Updates everything what happened this exact frame. Required in every SWGL project.*/
             int checkEvents();
             /* Refreshes the screen. Reccomended to put at the end of the loop as you cannot draw on the screen after using this function before it jumps back to the start of the loop.*/
             int clear();
             /* Quits the program.*/
             int close();
             /* Creates a debug table for debugging purposes*/
-            RSGL::debug createDebugTable();
+            SWGL::debug createDebugTable();
             /*Adds a flag to the window if to make it resizable or not depending on the `value` parem.*/
             void resize(bool value);
             /*Adds a flag to the window if to make it fullscreen or not depending on the `value` parem.*/
@@ -182,7 +196,7 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
             /* Changes the Window's name.*/
             int changeName(const char* name);
             /* */
-            int createScrollbar(int min, int max);
+            scrollbar createScrollbar(SWGL::shape id, const char* filename, SWGL::rect r);
             /* */
             menu createMenuBar(const char* text);
             /* */
@@ -201,13 +215,13 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
 
     // ============ DRAWING FUNCTIONS ============
     /*Draws a rectangle. Parameter `solid` is always set to true.*/
-    int drawRect(rect r, color c, bool solid=true, bool dotted=false, int border_size=3, RSGL::color c2={1991}, bool uptodown=false); 
+    int drawRect(rect r, color c, bool solid=true, bool dotted=false, int border_size=3, SWGL::color c2={1991}, bool uptodown=false); 
     /*Draws a triangle. Parameter `solid` is always set to true.*/
     int drawTriangle(triangle t, color c, bool solid=true);
     /*Draws a circle. Parameter `solid` is always set to true.*/
     int drawCircle(circle c, color col, bool solid=true, int border_size=3);
     /* Loads the image into memory.*/
-    image loadImage(image r, std::vector<RSGL::color> pixels={}); image loadImage(const char* file, rect r, std::vector<RSGL::color> pixels={}); 
+    image loadImage(image r, std::vector<SWGL::color> pixels={}); image loadImage(const char* file, rect r, std::vector<SWGL::color> pixels={}); 
     /* Draw pixels.*/
     int drawPixels(rect r, std::vector<color> pixels); int drawPixels(rect r, std::vector<unsigned int> pixels);
     /* Draws the text.*/
@@ -217,25 +231,25 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
 
     // ============ Collide Functions ============
     /*Circle coliding with point.*/
-    int CircleCollidePoint(RSGL::circle c, RSGL::point p);
+    int CircleCollidePoint(SWGL::circle c, SWGL::point p);
     /*Circle coliding with rect.*/
-    int CircleCollideRect(RSGL::circle c, RSGL::rect r);
+    int CircleCollideRect(SWGL::circle c, SWGL::rect r);
     /*Circle coliding with another circle.*/
-    int CircleCollideCircle(RSGL::circle cir1,RSGL::circle cir2);
+    int CircleCollideCircle(SWGL::circle cir1,SWGL::circle cir2);
     /*Rect coliding with point.*/
-    int RectCollidePoint(RSGL::rect r, RSGL::point p);
+    int RectCollidePoint(SWGL::rect r, SWGL::point p);
     /*Rect coliding with another rect.*/
-    int RectCollideRect(RSGL::rect r, RSGL::rect r2);
+    int RectCollideRect(SWGL::rect r, SWGL::rect r2);
     /*Point coliding with another point.*/
-    int PointCollidePoint(RSGL::point p, RSGL::point p2);
+    int PointCollidePoint(SWGL::point p, SWGL::point p2);
     /*Image coliding with rect.*/
-    int ImageCollideRect(RSGL::image img, RSGL::rect r);
+    int ImageCollideRect(SWGL::image img, SWGL::rect r);
     /*Image coliding with circle.*/
-    int ImageCollideCircle(RSGL::image img, RSGL::circle c);
+    int ImageCollideCircle(SWGL::image img, SWGL::circle c);
     /*Image coliding with point.*/
-    int ImageCollidePoint(RSGL::image img, RSGL::point p);
+    int ImageCollidePoint(SWGL::image img, SWGL::point p);
     /*Image coliding with another image.*/
-    int ImageCollideImage(RSGL::image img, RSGL::image img2);
+    int ImageCollideImage(SWGL::image img, SWGL::image img2);
 
     /* ========== .INI Functions ========== */
     // Reads a key from an settings.ini
@@ -269,9 +283,9 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
     /* Gets only the CPU information. This is the most time-consuming info function.*/
     device_info getCPUDeviceInfo(bool cpu=true, bool cores=true, bool percentage=true, bool architecture=true);
     /* Returns the current desktop screen resolution.*/
-    RSGL::resolution getScreenResolution();
+    SWGL::resolution getScreenResolution();
     /* Returns a vector list of resolutions (and the frequency) that the monitor/computer supports. */
-    std::vector<RSGL::resolution> getAvailableResolutions();
+    std::vector<SWGL::resolution> getAvailableResolutions();
 
     // ============ Misc Functions ============
     /* Gets the username of the user and returns it as a string.*/
@@ -313,10 +327,11 @@ namespace RSGL{ /* It all starts with this, the namespace containing the Ultimat
     /* Clears the console*/
     int clearConsole();
     /* Returns the distance between two objects.*/
-    point checkDistance(RSGL::circle c, RSGL::point p);
+    point checkDistance(SWGL::circle c, SWGL::point p);
     /* Returns the pixel distance.*/
-    point checkDistance(RSGL::circle c, RSGL::rect r); point checkDistance(RSGL::circle cir1,RSGL::circle cir2); point checkDistance(RSGL::rect r, RSGL::point p); point checkDistance(RSGL::rect r, RSGL::rect r2); point checkDistance(RSGL::point p, RSGL::point p2); point checkDistance(RSGL::image img, RSGL::rect r); point checkDistance(RSGL::image img, RSGL::circle c); point checkDistance(RSGL::image img, RSGL::point p); point checkDistance(RSGL::image img, RSGL::image img2);
-    
+    point checkDistance(SWGL::circle c, SWGL::rect r); point checkDistance(SWGL::circle cir1,SWGL::circle cir2); point checkDistance(SWGL::rect r, SWGL::point p); point checkDistance(SWGL::rect r, SWGL::rect r2); point checkDistance(SWGL::point p, SWGL::point p2); point checkDistance(SWGL::image img, SWGL::rect r); point checkDistance(SWGL::image img, SWGL::circle c); point checkDistance(SWGL::image img, SWGL::point p); point checkDistance(SWGL::image img, SWGL::image img2);
+    /* Gets the public IPv4*/
+    std::string getIPv4();
     // ============ Timer Functions ============
     /* Starts a timer.*/
     timer startTimer();

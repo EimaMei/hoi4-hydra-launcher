@@ -1,15 +1,24 @@
-#ifndef RSGL
-#include "../../RSGL.hpp"
+#ifndef SWGL
+#include "../../SWGL.hpp"
 #endif
 
 HMENU hMenubar={0};
 int l_num=1;
 
-RSGL::menu RSGL::window::createMenuBar(const char* text) { /* Should later be converted to RSGL::window::createMenuBar*/
+std::string SWGL::getIPv4() {
+    char buff[512];
+    FILE*  fp = popen ("curl http://ip.jsontest.com/ 2> nul", "r");
+    fread(buff,sizeof(buff),1,fp); pclose(fp); 
+    std::string m(buff); 
+
+    return m.substr(m.find("{\"ip\": \""));
+}
+
+SWGL::menu SWGL::window::createMenuBar(const char* text) { /* Should later be converted to SWGL::window::createMenuBar*/
     if (hMenubar == 0) hMenubar=CreateMenu();
     menu mm;
     mm.sMenubar=CreateMenu();
-    mm.window = RSGL::window::hwnd;
+    mm.window = SWGL::window::hwnd;
 
     AppendMenu(hMenubar, MF_POPUP, (UINT_PTR)mm.sMenubar, text);
     SetMenu(mm.window, hMenubar);
@@ -17,7 +26,7 @@ RSGL::menu RSGL::window::createMenuBar(const char* text) { /* Should later be co
     return mm;
 }
 
-RSGL::menu RSGL::menu::addSection(const char *text) {
+SWGL::menu SWGL::menu::addSection(const char *text) {
     list.insert(list.end(), {text, l_num});
     id_list.insert(id_list.end(), count);
     AppendMenu(sMenubar, MF_STRING, l_num, text);
@@ -55,10 +64,10 @@ int menu::removeMenuSection(int id) {
 }*/
 
 
-bool RSGL::menu::clickedSection(int id) {
-    if (RSGL::win.old_menu != 0) { 
+bool SWGL::menu::clickedSection(int id) {
+    if (SWGL::win.old_menu != 0) { 
         for (int i=0; i<list.size(); i++) {
-            if (id_list[i] == id && list[i].second == RSGL::win.old_menu) { RSGL::win.old_menu=0; return true;}
+            if (id_list[i] == id && list[i].second == SWGL::win.old_menu) { SWGL::win.old_menu=0; return true;}
         }
     }
     return false;
@@ -66,21 +75,21 @@ bool RSGL::menu::clickedSection(int id) {
 
 struct colorPicker {
     /* Pick the color.*/
-    RSGL::color pickColor();
+    SWGL::color pickColor();
     /* Change the current colorPicker color to something new.*/
-    int color(RSGL::color c);
+    int color(SWGL::color c);
     /* Change the current colorPicker color to something new.*/
-    int position(RSGL::rect r); int position(RSGL::circle cir);
+    int position(SWGL::rect r); int position(SWGL::circle cir);
 
-    private: RSGL::rect rr; RSGL::circle cirr; RSGL::color c; RSGL::shape ID;
+    private: SWGL::rect rr; SWGL::circle cirr; SWGL::color c; SWGL::shape ID;
     public:
-    colorPicker(RSGL::shape id, RSGL::rect r, RSGL::color c){rr=r; c=colorPicker::c;ID=id;}; 
-    colorPicker(RSGL::shape id, RSGL::circle cir, RSGL::color c){cirr=cir; c=colorPicker::c;ID=id;}; 
+    colorPicker(SWGL::shape id, SWGL::rect r, SWGL::color c){rr=r; c=colorPicker::c;ID=id;}; 
+    colorPicker(SWGL::shape id, SWGL::circle cir, SWGL::color c){cirr=cir; c=colorPicker::c;ID=id;}; 
 
     void draw();
 };
 
-RSGL::color colorPicker::pickColor() {
+SWGL::color colorPicker::pickColor() {
     CHOOSECOLOR ccolor;                 // common dialog box structure 
     static COLORREF acrCustClr[16]; // array of custom colors 
     int col;
@@ -97,14 +106,14 @@ RSGL::color colorPicker::pickColor() {
     return c;
 }
 
-int colorPicker::color(RSGL::color c) {colorPicker::c=c; return 0;};
-int colorPicker::position(RSGL::rect r) {rr=r; return 0;} int colorPicker::position(RSGL::circle cir) {cirr=cir; return 0;}
+int colorPicker::color(SWGL::color c) {colorPicker::c=c; return 0;};
+int colorPicker::position(SWGL::rect r) {rr=r; return 0;} int colorPicker::position(SWGL::circle cir) {cirr=cir; return 0;}
 
 void colorPicker::draw() {
     switch (ID) {
-        case RSGL::RECTANGLE: RSGL::drawRect(rr, colorPicker::c); break;
-        case RSGL::TRIANGLE: {RSGL::triangle f ={rr.x, rr.y, rr.width, rr.length}; RSGL::drawTriangle(f, colorPicker::c); break;}
-        case RSGL::CIRCLE: RSGL::drawCircle(cirr, colorPicker::c); break;
+        case SWGL::RECTANGLE: SWGL::drawRect(rr, colorPicker::c); break;
+        case SWGL::TRIANGLE: {SWGL::triangle f ={rr.x, rr.y, rr.width, rr.length}; SWGL::drawTriangle(f, colorPicker::c); break;}
+        case SWGL::CIRCLE: SWGL::drawCircle(cirr, colorPicker::c); break;
         default: break;
     }
 }
@@ -122,7 +131,7 @@ std::vector<unsigned int> dumpImage(const char* filename, bool print=true, types
         std::replace(s.begin(), s.end(), '.', '_');
 
         std::string format="unsigned int";
-        if (version == RGB) format="RSGL::color";
+        if (version == RGB) format="SWGL::color";
 
         if (print) {
             std::cout << 
@@ -160,7 +169,7 @@ std::vector<unsigned int> dumpImage(const char* filename, bool print=true, types
                     else msg+= stream.str()+", ";
                 }
                 else if (version == RGB) {
-                        RSGL::color c = {image[y][x].red, image[y][x].green, image[y][x].blue, 255};
+                        SWGL::color c = {image[y][x].red, image[y][x].green, image[y][x].blue, 255};
                         switch (type) {
                             case RGB: c = {image[y][x].red, image[y][x].green, image[y][x].blue, 255}; break;
                             case RGBA: c = {image[y][x].red, image[y][x].green, image[y][x].blue, image[y][x].alpha}; break;
@@ -185,7 +194,7 @@ std::vector<unsigned int> dumpImage(const char* filename, bool print=true, types
 }*/
 
 
-int RSGL::window::createScrollbar(int min, int max) {
+/*int SWGL::window::createScrollbar(int min, int max) {
     RECT rc = { 0 };
     GetClientRect(win.hwnd, &rc);
     SCROLLINFO si = { 0 };
@@ -197,23 +206,23 @@ int RSGL::window::createScrollbar(int min, int max) {
     si.nPos = 0;
     si.nTrackPos = 0;
     SetScrollInfo(win.hwnd, SB_VERT, &si, true);
-    RSGL::win.owr.width = min;
-    RSGL::win.owr.length = max;
-    MoveWindow(RSGL::window::hwnd, RSGL::window::r.x, RSGL::window::r.y, RSGL::window::r.width+1, RSGL::window::r.length, true);
-    MoveWindow(RSGL::window::hwnd, RSGL::window::r.x, RSGL::window::r.y, RSGL::window::r.width-1, RSGL::window::r.length, true);
+    SWGL::win.owr.width = min;
+    SWGL::win.owr.length = max;
+    MoveWindow(SWGL::window::hwnd, SWGL::window::r.x, SWGL::window::r.y, SWGL::window::r.width+1, SWGL::window::r.length, true);
+    MoveWindow(SWGL::window::hwnd, SWGL::window::r.x, SWGL::window::r.y, SWGL::window::r.width-1, SWGL::window::r.length, true);
 
     return 0;
 }
 
-int RSGL::window::createCheckbox(RSGL::point r) {
-    CreateWindowW(L"Button",NULL,WS_VISIBLE|WS_CHILD |BS_CHECKBOX,r.x, r.y,19,19,RSGL::window::hwnd, (HMENU) 1,GetModuleHandle(nullptr),NULL);
+int SWGL::window::createCheckbox(SWGL::point r) {
+    CreateWindowW(L"Button",NULL,WS_VISIBLE|WS_CHILD |BS_CHECKBOX,r.x, r.y,19,19,SWGL::window::hwnd, (HMENU) 1,GetModuleHandle(nullptr),NULL);
     CheckDlgButton(hwnd, 1, BST_CHECKED);
         
     l_num++;
     return 0;
-}
+}*/
 
-RSGL::color RSGL::image::getPixelColor(RSGL::point pos, bool og_size/*=false*/) {
+SWGL::color SWGL::image::getPixelColor(SWGL::point pos, bool og_size/*=false*/) {
     if ( pos.x+pos.y == 0 || pos.x > r.width || pos.y > r.length ) return {-1,-1,-1};
 
     if (og_size || r.width+r.length == original_size.x+original_size.y) {

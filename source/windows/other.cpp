@@ -1,11 +1,11 @@
-#ifndef RSGL
-#include "../../include/include/windows/rsgl.hpp"
+#ifndef SWGL
+#include "../../SWGL.hpp"
 #endif
 
 DiscordState discord_state;
 int64_t duration;
 
-int RSGL::discordCreateApplication(discord::ClientId clientID, bool timer/*=false*/) {
+int SWGL::discordCreateApplication(discord::ClientId clientID, bool timer/*=false*/) {
     discord::Core* core{}; 
     discord::Core::Create(clientID, DiscordCreateFlags_Default, &core); // Get the application from the `clientID`
     discord_state.core.reset(core);
@@ -22,7 +22,7 @@ int RSGL::discordCreateApplication(discord::ClientId clientID, bool timer/*=fals
     return 0;
 }
 
-int RSGL::discordUpdatePresence(const char* details/*="*/, const char* state/*="*/, const char* largeImage/*="*/, const char* largeText/*="*/, const char* smallImage/*="*/, const char* smallText/*=""*/) {
+int SWGL::discordUpdatePresence(const char* details/*="*/, const char* state/*="*/, const char* largeImage/*="*/, const char* largeText/*="*/, const char* smallImage/*="*/, const char* smallText/*=""*/) {
     discord::Activity activity{};
     if (strcmp(details, "")) activity.SetDetails(details); // We check if the parameters are empty or nah
     if (strcmp(state, "")) activity.SetState(state);
@@ -38,7 +38,7 @@ int RSGL::discordUpdatePresence(const char* details/*="*/, const char* state/*="
     return 0;
 }
 
-std::string RSGL::readIniKey(const char* path, std::string Key) {
+std::string SWGL::readIniKey(const char* path, std::string Key) {
     char szValue[MAX_PATH];
     char fullFilename[MAX_PATH];
     GetFullPathName(path, MAX_PATH, fullFilename, nullptr);
@@ -47,32 +47,32 @@ std::string RSGL::readIniKey(const char* path, std::string Key) {
     if ( strcmp(szValue,"ERROR") != 0) { return szValue; }
     return "";
 }
-int RSGL::writeIniKey(const char* path, std::string Key, std::string value) {
+int SWGL::writeIniKey(const char* path, std::string Key, std::string value) {
     char fullFilename[MAX_PATH];
     GetFullPathName(path, MAX_PATH, fullFilename, nullptr);
     WritePrivateProfileString (NULL, Key.c_str(), value.c_str(), fullFilename);
     return 0;
 }
 
-int RSGL::deleteIniKey(const char* path, std::string Key) {
+int SWGL::deleteIniKey(const char* path, std::string Key) {
     char fullFilename[MAX_PATH];
     GetFullPathName(path, MAX_PATH, fullFilename, nullptr);
     WritePrivateProfileString (NULL, Key.c_str(), NULL, fullFilename);
     return 0;
 }
 
-int RSGL::deleteIniSection(const char* path) {
+int SWGL::deleteIniSection(const char* path) {
     char fullFilename[MAX_PATH];
     GetFullPathName(path, MAX_PATH, fullFilename, nullptr);
     WritePrivateProfileString (NULL, NULL, NULL, fullFilename);
     return 0;
 }
 
-bool RSGL::iniKeyExists(const char* path, std::string Key) {
+bool SWGL::iniKeyExists(const char* path, std::string Key) {
     return readIniKey(path, Key).size() > 0;
 }
 
-int RSGL::findNumberAfterDecimalPoint(float num, int howManyKeep/*=-1*/) {
+int SWGL::findNumberAfterDecimalPoint(float num, int howManyKeep/*=-1*/) {
     std::string s;
     std::stringstream out;
     out << num; s = out.str();
@@ -81,19 +81,19 @@ int RSGL::findNumberAfterDecimalPoint(float num, int howManyKeep/*=-1*/) {
     return std::stoi(s);
 }
 
-RSGL::timer RSGL::startTimer() {
+SWGL::timer SWGL::startTimer() {
     auto start = std::chrono::system_clock::now();
     return {0,0,0,0,start};
 }
 
-int RSGL::updateTimer(RSGL::timer& t, int howManyKeep/*=2*/) {
+int SWGL::updateTimer(SWGL::timer& t, int howManyKeep/*=2*/) {
     std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now()-t.id;
     int h=0,
         m=0,
         s=0,
         ms=0;
     double time =  elapsed_seconds.count(); 
-    ms=RSGL::findNumberAfterDecimalPoint(time, howManyKeep);
+    ms=SWGL::findNumberAfterDecimalPoint(time, howManyKeep);
     s=time;
     if (m >= 60) { h=m/60;}
     if (time >= 60.0) { m=abs(s)/60; }
@@ -103,14 +103,14 @@ int RSGL::updateTimer(RSGL::timer& t, int howManyKeep/*=2*/) {
     return 0;
 }
 
-RSGL::date RSGL::getCurrentTime() {
+SWGL::date SWGL::getCurrentTime() {
     time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     tm utc_tm = *localtime(&tt);
     return {utc_tm.tm_year + 1900, utc_tm.tm_mon + 1,utc_tm.tm_mday, utc_tm.tm_hour,utc_tm.tm_min, utc_tm.tm_sec};
 }
 
-RSGL::resolution RSGL::getScreenResolution() {
-    HMONITOR monitor = MonitorFromWindow(RSGL::win.hwnd, MONITOR_DEFAULTTONEAREST);
+SWGL::resolution SWGL::getScreenResolution() {
+    HMONITOR monitor = MonitorFromWindow(SWGL::win.hwnd, MONITOR_DEFAULTTONEAREST);
     MONITORINFO info;
     info.cbSize = sizeof(MONITORINFO);
     GetMonitorInfo(monitor, &info);
@@ -121,11 +121,11 @@ RSGL::resolution RSGL::getScreenResolution() {
     return {info.rcMonitor.right - info.rcMonitor.left, info.rcMonitor.bottom - info.rcMonitor.top, (int)dev.dmDisplayFrequency};
 }
 
-std::vector<RSGL::resolution> RSGL::getAvailableResolutions() {
+std::vector<SWGL::resolution> SWGL::getAvailableResolutions() {
     DEVMODE dev;
     dev.dmSize = sizeof(DEVMODE);
     int i=0;
-    std::vector<RSGL::resolution> list= { {0,0,0} };
+    std::vector<SWGL::resolution> list= { {0,0,0} };
     while (EnumDisplaySettings(NULL, i, &dev)) {
         if (list.begin()->x == (int)dev.dmPelsWidth && list.begin()->y == (int)dev.dmPelsHeight)  { }
         else list.insert(list.begin(), {(int)dev.dmPelsWidth, (int)dev.dmPelsHeight, (int)dev.dmDisplayFrequency}); 
@@ -135,37 +135,37 @@ std::vector<RSGL::resolution> RSGL::getAvailableResolutions() {
     return list;
 }
 
-bool RSGL::button::clicked() {
-    if (RSGL::win.type == RSGL::MouseButtonPressed && RSGL::RectCollidePoint({rr.x, rr.y, rr.width, rr.length }, {win.mouse.x, win.mouse.y})) { mouse=win.button; m=true; return true;}
+bool SWGL::button::clicked() {
+    if (SWGL::win.type == SWGL::MouseButtonPressed && SWGL::RectCollidePoint({rr.x, rr.y, rr.width, rr.length }, {win.mouse.x, win.mouse.y})) { mouse=win.button; m=true; return true;}
     mouse=0;
     return false;
 }
 
-bool RSGL::button::hovered() {
-    if (RSGL::RectCollidePoint(rr, {win.mouse.x, win.mouse.y})) return true;
+bool SWGL::button::hovered() {
+    if (SWGL::RectCollidePoint(rr, {win.mouse.x, win.mouse.y})) return true;
     return false;
 }
 
-bool RSGL::button::released(bool full_checks/*=false*/) {
-    if (RSGL::win.type == RSGL::MouseButtonReleased && (RSGL::RectCollidePoint(rr, {win.mouse.x, win.mouse.y}) || (m==false && full_checks) ) ) { mouse=0; return true;}
+bool SWGL::button::released(bool full_checks/*=false*/) {
+    if (SWGL::win.type == SWGL::MouseButtonReleased && (SWGL::RectCollidePoint(rr, {win.mouse.x, win.mouse.y}) || (m==false && full_checks) ) ) { mouse=0; return true;}
     mouse=0;
     return false;
 }
 
-bool RSGL::button::pressed() { return held(); } 
-bool RSGL::button::held() {
+bool SWGL::button::pressed() { return held(); } 
+bool SWGL::button::held() {
     clicked();
-    if (m==true && RSGL::win.type != RSGL::MouseButtonReleased) { return true;}
-    if (RSGL::win.type == RSGL::MouseButtonReleased) m=false;
+    if (m==true && SWGL::win.type != SWGL::MouseButtonReleased) { return true;}
+    if (SWGL::win.type == SWGL::MouseButtonReleased) m=false;
     return false;
 }
 
-RSGL::point checkDistance(RSGL::circle c, RSGL::rect r) {return {};}
-RSGL::point checkDistance(RSGL::circle cir1,RSGL::circle cir2) {return {};}
-RSGL::point checkDistance(RSGL::rect r, RSGL::point p) {return {p.x-r.x+r.width, p.y-r.y+r.length};}
-RSGL::point checkDistance(RSGL::rect r, RSGL::rect r2) {return {r2.x+r2.width-r.x+r.width, r2.y+r2.length-r.y+r.length};}
-RSGL::point checkDistance(RSGL::point p, RSGL::point p2) {return {p.x-p2.x, p.y-p2.y};}
-RSGL::point checkDistance(RSGL::image img, RSGL::rect r) {return {img.r.x+img.r.width-r.x+r.width, img.r.y+img.r.length-r.x+r.length};}
-RSGL::point checkDistance(RSGL::image img, RSGL::circle cir) {return {};}
-RSGL::point checkDistance(RSGL::image img, RSGL::point p) {return {img.r.x+img.r.width-p.x, img.r.y+img.r.length-p.y};}
-RSGL::point checkDistance(RSGL::image img, RSGL::image img2) {return {img.r.x+img.r.width-img2.r.x+img2.r.width, img.r.y+img.r.length-img2.r.x+img2.r.length};}
+SWGL::point checkDistance(SWGL::circle c, SWGL::rect r) {return {};}
+SWGL::point checkDistance(SWGL::circle cir1,SWGL::circle cir2) {return {};}
+SWGL::point checkDistance(SWGL::rect r, SWGL::point p) {return {p.x-r.x+r.width, p.y-r.y+r.length};}
+SWGL::point checkDistance(SWGL::rect r, SWGL::rect r2) {return {r2.x+r2.width-r.x+r.width, r2.y+r2.length-r.y+r.length};}
+SWGL::point checkDistance(SWGL::point p, SWGL::point p2) {return {p.x-p2.x, p.y-p2.y};}
+SWGL::point checkDistance(SWGL::image img, SWGL::rect r) {return {img.r.x+img.r.width-r.x+r.width, img.r.y+img.r.length-r.x+r.length};}
+SWGL::point checkDistance(SWGL::image img, SWGL::circle cir) {return {};}
+SWGL::point checkDistance(SWGL::image img, SWGL::point p) {return {img.r.x+img.r.width-p.x, img.r.y+img.r.length-p.y};}
+SWGL::point checkDistance(SWGL::image img, SWGL::image img2) {return {img.r.x+img.r.width-img2.r.x+img2.r.width, img.r.y+img.r.length-img2.r.x+img2.r.length};}

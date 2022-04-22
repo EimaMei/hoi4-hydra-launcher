@@ -1,16 +1,16 @@
-#ifndef RSGL
-#include "../../include/include/windows/rsgl.hpp"
+#ifndef SWGL
+#include "../../SWGL.hpp"
 #endif
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_TRUETYPE_IMPLEMENTATION 
 #include "deps/stb_truetype.h" 
 #include "deps/stb_image.h"
 
-int RSGL::drawRect(RSGL::rect r, RSGL::color c, bool solid/*=true*/, bool dotted/*=false*/, int border_size/*=3*/, RSGL::color c2/*={1991}*/, bool uptodown/*=true*/) {
-    float i = RSGL::win.r.width/2*1.0f; //Convert RSGL::win.r int coordinates to OpenGL float coordinates
+int SWGL::drawRect(SWGL::rect r, SWGL::color c, bool solid/*=true*/, bool dotted/*=false*/, int border_size/*=3*/, SWGL::color c2/*={1991}*/, bool uptodown/*=true*/) {
+    float i = SWGL::win.r.width/2*1.0f; //Convert SWGL::win.r int coordinates to OpenGL float coordinates
     float  x = (r.x/i)-1.0f;
     float  x2 =((r.x+r.width)/i)-1.0f;
-    i = RSGL::win.r.length/2*1.0f;
+    i = SWGL::win.r.length/2*1.0f;
     float  y = (-(r.y)/i)+1.0f;
     float  y2 =(-(r.y+r.length)/i)+1.0f;
     
@@ -29,11 +29,11 @@ int RSGL::drawRect(RSGL::rect r, RSGL::color c, bool solid/*=true*/, bool dotted
 }
 
 
-int RSGL::drawTriangle(RSGL::triangle t, RSGL::color c, bool solid/*=true*/) {
-    float i = RSGL::win.r.width/2*1.0f;
+int SWGL::drawTriangle(SWGL::triangle t, SWGL::color c, bool solid/*=true*/) {
+    float i = SWGL::win.r.width/2*1.0f;
     float  x  = (t.x/i)-1.0f;
     float  x2 = ((t.x+t.width)/i)-1.0f;
-    i = RSGL::win.r.length/2*1.0f;
+    i = SWGL::win.r.length/2*1.0f;
     float  y = (-(t.y)/i)+1.0f;
     float  y2 =(-(t.y+t.length)/i)+1.0f;
     
@@ -48,13 +48,13 @@ int RSGL::drawTriangle(RSGL::triangle t, RSGL::color c, bool solid/*=true*/) {
     return 1;
 }
 
-int RSGL::drawCircle(RSGL::circle c, RSGL::color col, bool solid/*=true*/, int border_size/*=3*/) {
-    float i = RSGL::win.r.width/2*1.0f;
+int SWGL::drawCircle(SWGL::circle c, SWGL::color col, bool solid/*=true*/, int border_size/*=3*/) {
+    float i = SWGL::win.r.width/2*1.0f;
     float  x2 = (c.x/i)-1.0f;
-    i = RSGL::win.r.length/2*1.0f;
+    i = SWGL::win.r.length/2*1.0f;
     float  y2 = (-(c.y)/i)+1.0f;
 
-    i = RSGL::win.r.width/2*1.0f;
+    i = SWGL::win.r.width/2*1.0f;
     float  r = ((-(c.radius)/i)-1.0f);
     if (!solid){
         glBegin(GL_LINE_LOOP);
@@ -85,10 +85,10 @@ int RSGL::drawCircle(RSGL::circle c, RSGL::color col, bool solid/*=true*/, int b
     return 1;
 }
 
-RSGL::color RSGL::setGrayscale(RSGL::color c) {int num=(c.r+c.g+c.b)/3;return {num,num,num, c.a};}
-RSGL::color RSGL::setInverted(RSGL::color c) {return {255-c.r, 255-c.g, 255-c.b, c.a};}
+SWGL::color SWGL::setGrayscale(SWGL::color c) {int num=(c.r+c.g+c.b)/3;return {num,num,num, c.a};}
+SWGL::color SWGL::setInverted(SWGL::color c) {return {255-c.r, 255-c.g, 255-c.b, c.a};}
 
-RSGL::image::image(const char * Filename, rect R, bool load/*=true*/) {
+SWGL::image::image(const char * Filename, rect R, bool load/*=true*/) {
     if (load) {
         data = stbi_load(Filename, &original_size.x, &original_size.y, 0, 4); 
 
@@ -99,12 +99,11 @@ RSGL::image::image(const char * Filename, rect R, bool load/*=true*/) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,original_size.x, original_size.y,0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         
         glBindTexture(GL_TEXTURE_2D, 0);
-        //free(data);
     }
     filename=Filename; r=R; loaded=load;
 }
 
-void RSGL::image::load() {
+void SWGL::image::load() {
     data = stbi_load(filename, &original_size.x, &original_size.y, 0, 4); 
 
     glGenTextures(1, &tex);
@@ -117,16 +116,8 @@ void RSGL::image::load() {
     loaded=true;
 }
 
-void RSGL::button::load(const char* filename, RSGL::rect r, bool load_regardless/*=false*/) {
-    if (i.filename != filename || load_regardless) {
-        i.filename=filename;
-        i.r=r;
-        i.load();
-    }
-}
-
-int RSGL::image::draw() {
-    float i = win.r.width/2*1.0f; //Convert RSGL::win.r int coordinates to OpenGL float coordinates
+int SWGL::image::draw() {
+    float i = win.r.width/2*1.0f; //Convert SWGL::win.r int coordinates to OpenGL float coordinates
     float  x = (r.x/i)-1.0f;
     float  x2 =((r.x+r.width)/i)-1.0f;
     i = win.r.length/2*1.0f;
@@ -148,16 +139,16 @@ int RSGL::image::draw() {
     return 0;
 }
 /*
-int RSGL::drawPixels(RSGL::rect r, std::vector<RSGL::color> pixels) {
+int SWGL::drawPixels(SWGL::rect r, std::vector<SWGL::color> pixels) {
     int xx=-1;
 
     for (int i=0; i<p.size(); i++) { if (pixels.size() == p[i].first.size()) { xx=i; break; }  }
     // Quick and dirty way to check if the pixels are the same. Isn't 100% accurate but it's better than
     // iterating through every element in the vector.
-    //if (xx==-1) { RSGL::loadImage({"9607", r}, pixels); xx=p.size()-1; }
-    r.y += RSGL::win.owr.x;
+    //if (xx==-1) { SWGL::loadImage({"9607", r}, pixels); xx=p.size()-1; }
+    r.y += SWGL::win.owr.x;
 
-    float i = win.r.width/2*1.0f; //Convert RSGL::win.r int coordinates to OpenGL float coordinates
+    float i = win.r.width/2*1.0f; //Convert SWGL::win.r int coordinates to OpenGL float coordinates
     float  x = (r.x/i)-1.0f;
     float  x2 =((r.x+r.width)/i)-1.0f;
     i = win.r.length/2*1.0f;
@@ -179,12 +170,20 @@ int RSGL::drawPixels(RSGL::rect r, std::vector<RSGL::color> pixels) {
     return 0;
 }*/
 
-void RSGL::button::draw(RSGL::rect r/*={}*/) {
+void SWGL::button::load(const char* filename, SWGL::rect r, bool load_regardless/*=false*/) {
+    if (i.filename != filename || load_regardless) {
+        i.filename=filename;
+        i.r=r;
+        i.load();
+    }
+}
+
+void SWGL::button::draw(SWGL::rect r/*={}*/) {
     if (r.x+r.width+r.length+r.y != 0) rr=r;
     switch (ID) {
-        case RECTANGLE: RSGL::drawRect(rr, cc); break;
-        case TRIANGLE: {RSGL::triangle f ={rr.x, rr.y, rr.width, rr.length}; RSGL::drawTriangle(f, cc); break;}
-        case CIRCLE: RSGL::drawCircle(cirr, cc); break;
+        case RECTANGLE: SWGL::drawRect(rr, cc); break;
+        case TRIANGLE: {SWGL::triangle f ={rr.x, rr.y, rr.width, rr.length}; SWGL::drawTriangle(f, cc); break;}
+        case CIRCLE: SWGL::drawCircle(cirr, cc); break;
         case IMAGE: {i.r=rr; i.draw(); break;}
         default: break;
     }
@@ -193,7 +192,7 @@ void RSGL::button::draw(RSGL::rect r/*={}*/) {
 char ttf_buffer[1<<25];
 char ttf_buffer2[1<<25];
 
-void drawTextRAW(std::string text, RSGL::circle r, const char* Font, RSGL::color col, RSGL::drawable d){
+void drawTextRAW(std::string text, SWGL::circle r, const char* Font, SWGL::color col, SWGL::drawable d){
     int high=0;
     FILE* f = fopen(Font, "rb");
     glBegin(GL_POINTS); 
@@ -217,7 +216,7 @@ void drawTextRAW(std::string text, RSGL::circle r, const char* Font, RSGL::color
                 for (j=0; j < h; ++j) {
                     for (i=0; i < w; ++i)
                         if (" .:ioVM@"[bitmap[j*w+i]>>5] != ' '){ 
-                            RSGL::point p1 = {r.x+i,r.y+j+b};
+                            SWGL::point p1 = {r.x+i,r.y+j+b};
                             float i = d.r.width/2*1.0f;
                             float  x = (p1.x/i)-1.0f;
                             i = d.r.length/2*1.0f;
@@ -244,9 +243,9 @@ struct Letter{
 };
 
 std::vector<Letter> ls;
-std::vector<RSGL::point> points;
+std::vector<SWGL::point> points;
 
-void RSGL::drawText(std::string text, RSGL::circle r, const char* Font, RSGL::color col){
+void SWGL::drawText(std::string text, SWGL::circle r, const char* Font, SWGL::color col){
     int x; int x2=0; int y;
     std::string textStr = text;
     
@@ -328,6 +327,6 @@ void RSGL::drawText(std::string text, RSGL::circle r, const char* Font, RSGL::co
 }
 
 
-RSGL::Text::Text(std::string txt, RSGL::circle r, const char* font, RSGL::color col, bool draw){rect=r; text=txt; c=col; f=font; if (draw) RSGL::drawText(txt,r,font,col);}
+SWGL::Text::Text(std::string txt, SWGL::circle r, const char* font, SWGL::color col, bool draw){rect=r; text=txt; c=col; f=font; if (draw) SWGL::drawText(txt,r,font,col);}
 
-void RSGL::Text::draw(){ RSGL::drawText(text,rect,f,c); }
+void SWGL::Text::draw(){ SWGL::drawText(text,rect,f,c); }

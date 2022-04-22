@@ -1,5 +1,5 @@
-#ifndef RSGL
-#include "../../include/include/windows/rsgl.hpp"
+#ifndef SWGL
+#include "../../SWGL.hpp"
 #endif
 int num=0;
 
@@ -74,5 +74,5 @@ bool RSAL::audio::isPlaying() {
     return done;
 }
 
-std::string RSGL::audio::getFile(){return File;}
+std::string SWGL::audio::getFile(){return File;}
 void RSAL::quit() { mciSendString(TEXT("Close All"), NULL, 0, 0 ); }
